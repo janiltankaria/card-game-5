@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://code.jquery.com/jquery-3.1.1.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/prefixfree/1.0.7/prefixfree.min.js"></script>
+    <title>Page Title</title>
+    <style>
+        * {
+     user-select: none;
+     -webkit-user-select: none;
+     -ms-user-select: none;
+     -moz-user-select: none;
+ }
+body {
+    margin: 0;
+}
+#cards {
+    width: 100vw;
+    height: 100vh;
+    border-collapse: collapse;
+    padding: 0;
+    table-layout: fixed;
+}
+td {
+    box-shadow: 0 0 3px #333 inset;
+    text-align: center;
+    overflow: hidden;
+    font-size: 8pt;
+    color: #FFF;
+    background: rgb(202, 153, 221);
+    transition: all 500ms ease-in-out, color 250ms ease-in-out, background 250ms ease-in-out;
+}
+.down {
+    transform: rotateX(180deg);
+    -webkit-transform: rotateX(180deg);
+    color: transparent;
+    background: rgb(184, 119, 221);
+}
+.disabled {
+    background: #AEA;
+}
+    </style>
+    <script>
+        $(function(){
+    var empty = new Object();
+    var opened = {
+        "1" : new Object(),
+        "2" : new Object()
+    };
+    var moves = 0;
+    var clicks = 0;
+    var time = $.now();
+    function unflip(){
+    setTimeout(function(){
+    var one = $(opened["1"]);
+    var two = $(opened["2"]);
+    if(one.text() != two.text()){
+        one.toggleClass("down");
+        two.toggleClass("down");
+    }
+    else{
+        one.off("click");
+        two.off("click");
+        one.attr("name", true);
+        two.attr("name", true);
+        one.addClass("disabled");
+        two.addClass("disabled");
+        var win = false;
+        for(var i = 0; i < 16; i++){
+            var name = $("td").eq(i).attr("name");
+            if(name && name != false){
+                win = true;
+            }
+            else{
+                win = false;
+                break;
+            }
+        }
+        if(win == true){
+            var restart = confirm("You Won!\nMoves: " + moves + "\nPress \"OK\" to start a New Game!");
+            if(restart){
+                setup(true);
+                moves = 0;
+            }else{}
+        }else{}
+    }
+        opened = {
+        "1" : new Object(),
+        "2" : new Object()
+    };
+        }, 500);
+    }
+    function clicked(){
+    if(time){
+    if(parseInt($.now()) - parseInt(time) >= 500){
+    ++clicks;
+    ++moves;
+    time = $.now();
+    if($(this).hasClass("click")){
+        $(this).removeClass("click");
+        $(this).addClass("down");
+        opened["1"] = new Object();
+        clicks = 0;
+    }
+    else{
+        $(this).addClass("click");
+        if(clicks >= 2){
+            opened["2"] = $(this);
+            unflip();
+            clicks = 0;
+            $("td").removeClass("click")
+        }
+        else{
+            opened["1"] = $(this)
+        }
+        $(this).toggleClass("down");
+    }}else{}
+    }else{}
+    }
+    $("td").on("click", clicked);
+    function setup(retry){
+    if(retry){
+        $("td").on("click", clicked);
+        $("td").toggleClass("down");
+    }
+        var used = {
+            "0" : false,
+            "1" : false,
+            "2" : false,
+            "3" : false,
+            "4" : false,
+            "5" : false,
+            "6" : false,
+            "7" : false,
+            "8" : false,
+            "9" : false,
+            "10" : false,
+            "11" : false,
+            "12" : false,
+            "13" : false,
+            "14" : false,
+            "15" : false
+        }
+        function random(){
+            var rand = (Math.floor(Math.random() * 16));
+            while(used[rand] == true){
+                rand = (Math.floor(Math.random() * 16));
+            }
+            used[rand] = true;
+            return rand;
+        }
+        var icons = [
+            " What is VHDL fullform  ?  answer :- VHSIC Hardware Description Language",
+            "What is VHDL is used for ? Answers :- VHDL is generally used to write text models that describe a logic circuit. Such a model is processed by a synthesis program, only if it is part of the logic design. A simulation program is used to test the logic design using simulation models to represent the logic circuits that interface to the design.",
+            "Basic Element of VHDL ?  Answer :- 1> Entity The Entity is used to specify the input and output ports of the circuit. 2>The architecture is the second part of a VHDL component and is used to describe the behaviour or structure of our design. We must associate an architecture with a previously defined VHDL entity.",
+            "What is XOR Gate ?? XOR GATE XOR gate (sometimes EOR, or EXOR and pronounced as Exclusive OR) is a digital logic gate that gives a true (1 or HIGH) output when the number of true inputs is odd. An XOR gate implements an exclusive or; that is, a true output results if one, and only one, of the inputs to the gate is true.",
+            "What is JK Flip-Flop ? A JK flip-flop is a refinement of the SR flip-flop in that the indeterminate state of the SR type is defined in the JK type. Inputs J and K behave like inputs S and R to set and clear the flip-flop (note that in a JK flip-flop, the letter J is for set and the letter K is for clear).",
+            " What is SR Flip-Flop ? A flip-flop circuit can be constructed from two NAND gates or two NOR gates. These flip-flops are shown in Figure. Each flip-flop has two outputs, Q and Q', and two inputs, set and reset. This type of flip-flop is referred to as an SR flip-flop.",
+            "What is NAND Gate ? Answer :- a Boolean operator which gives the value zero if and only if all the operands have a value of one, and otherwise has a value of one (equivalent to NOT AND).a circuit which produces an output signal unless there are signals on all of its inputs.",
+            " What is NOT GATE ? Answer :- Inverting NOT gates are single input devicse which have an output level that is normally at logic level “1” and goes “LOW” to a logic level “0” when its single input is at logic level “1”, in other words it “inverts” (complements) its input signal. The output from a NOT gate only returns “HIGH” again when its input is at logic level “0” giving us the Boolean expression of:  A = Q."
+        ];
+        for(i in icons){
+            var ico = icons[i];
+            var one = $("td").eq(random());
+            var two = $("td").eq(random());
+            $(one).text(ico);
+            $(two).text(ico);
+        }
+        $("td").removeAttr("name");
+        $("td").removeClass("disabled");
+    }
+    setup();
+});
+    </script>
+</head>
+<body>
+<table id="cards" border="0">
+    <tr>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+    </tr>
+    <tr>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+    </tr>
+    <tr>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+    </tr>
+    <tr>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+        <td class="down"></td>
+    </tr>
+</table>
+</body>
+</html>
